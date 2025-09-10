@@ -38,7 +38,7 @@ With this app, you can turn your smartphone into a **music controller** for Spot
 - [Spicetify](https://github.com/spicetify/spicetify-cli) installed and configured  
 - Spotify Desktop installed
 
-### 3 Start the Python Server
+### 2 Start the Python Server
 ```bash
 
 import asyncio
@@ -100,10 +100,10 @@ async def main():
 asyncio.run(main())
 ```
 
-### 4 Start the Spicetify script
+### 3 Start the Spicetify script
 The script starts automatically once properly added to Spicetify.
 
-### 5 Start the React Native app
+### 4 Start the React Native app
 ```bash
 npm run start
 ```
