@@ -33,15 +33,77 @@ With this app, you can turn your smartphone into a **music controller** for Spot
 
 ## 🚀 Installation & Usage
 
-### 1️⃣ Requirements
+### 1 Requirements
 - [Node.js](https://nodejs.org/)  
 - [Spicetify](https://github.com/spicetify/spicetify-cli) installed and configured  
-- Spotify Desktop installed  
+- Spotify Desktop installed
 
-### 2️⃣ Start the Spicetify script
+### 3 Start the Python Server
+```bash
+
+import asyncio
+import json
+import websockets
+import subprocess
+
+clients = []
+
+def handle_open_app(app_name):
+    match app_name:
+        case "Steam":
+            subprocess.Popen("C:\\Program Files (x86)\\Steam\\Steam.exe")
+        case _:
+            print(f"App {app_name} non riconosciuta")
+
+def handle_desktop_commands(data):
+    command = data.get("command")
+    
+    match command:
+        case "OPEN-APP":
+            app_name = data.get("app")
+            if app_name:
+                handle_open_app(app_name)
+        case "Python":
+            print("You can become a Data Scientist")
+
+async def websocket_handler(websocket):
+    """Gestisce la connessione WebSocket e inoltra i messaggi."""
+    clients.append(websocket)
+    try:
+        async for message in websocket:
+            print(f"Messaggio ricevuto: {message}")
+            try:
+                data = json.loads(message)  # Converte la stringa JSON in dizionario
+                if data.get("type") == "DESKTOP":
+                    handle_desktop_commands(data)
+                else:
+                    # Invia il messaggio a tutti gli altri client connessi
+                    for client in clients:
+                        if client != websocket:
+                            await client.send(message)
+            except json.JSONDecodeError:
+                print("Errore nel parsing del messaggio JSON")
+    except websockets.ConnectionClosed:
+        print("Client disconnesso")
+    finally:
+        clients.remove(websocket)
+
+async def main():
+    """Avvia il server WebSocket"""
+    html_server = await websockets.serve(websocket_handler, "0.0.0.0", 8765)
+    spicetify_server = await websockets.serve(websocket_handler, "0.0.0.0", 8766)
+
+    print("WebSocket server avviato su 8765 e 8766")
+    await asyncio.Future()  # Mantiene il server attivo
+
+# Esegui il server WebSocket
+asyncio.run(main())
+```
+
+### 4 Start the Spicetify script
 The script starts automatically once properly added to Spicetify.
 
-### 3️⃣ Start the React Native app
+### 5 Start the React Native app
 ```bash
 npm run start
 ```
