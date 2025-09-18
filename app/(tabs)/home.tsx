@@ -6,9 +6,9 @@ import {
   View
 } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import SpotifyTab from './SpotifyTab';
+import SpotifyTab from './spotifytab';
 
-export default function TabLayout() {
+export default function Home() {
   return (
     <View style={styles.container}>
       <StatusBar
