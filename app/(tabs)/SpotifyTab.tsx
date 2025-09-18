@@ -20,9 +20,10 @@ import { Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, useWindo
 
 import CustomSlider from '@/components/CustomSlider';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import PagerView from 'react-native-pager-view';
 
 import { useWebSocket } from '@/contexts/WebsocketContext';
+import PagerView from 'react-native-pager-view';
+import SpotifyPlaylistTab from './spotifyplaylisttab';
 
 export default function SpotifyTab() {
     const { state, sendCommandWithStateUpdate } = useWebSocket();
@@ -96,8 +97,7 @@ export default function SpotifyTab() {
             blurRadius={50}
             resizeMode="cover"
         >
-            <PagerView style={styles.pagerView} initialPage={0} orientation="vertical">
-                {/* Pagina controllo musica */}
+            <PagerView style={{ flex: 1 }} initialPage={0} orientation={"vertical"}>
                 <View key="1" style={[styles.page, { flexDirection: isPortrait ? 'column' : 'row' }]}>
                     <View style={styles.leftPanel}>
                         <Animated.Image
@@ -203,20 +203,16 @@ export default function SpotifyTab() {
                     </View>
                 </View>
 
-                {/* Tab 2 */}
+
                 <View key="2" style={styles.page}>
-                    <Text style={styles.textStyle}>Tab 2</Text>
+                    <SpotifyPlaylistTab></SpotifyPlaylistTab>
                 </View>
+
             </PagerView>
         </ImageBackground>
     );
 }
-
 const styles = StyleSheet.create({
-    pagerView: {
-        flex: 1,
-        backgroundColor: 'transparent'
-    },
     page: {
         flex: 1,
         justifyContent: 'center',

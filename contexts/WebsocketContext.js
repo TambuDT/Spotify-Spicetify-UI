@@ -19,6 +19,7 @@ export const WebSocketProvider = ({ children }) => {
     isMuted: false,
     shuffle: false,
     repeat: 0,
+    playlists: [],
   });
 
   // Funzione per inviare comandi al WS
@@ -61,6 +62,7 @@ export const WebSocketProvider = ({ children }) => {
     websocket.current.onopen = () => {
       console.log("WebSocket connesso.");
       sendCommand("isplaying");
+      sendCommand("getplaylists");
       setState(prev => ({ ...prev, isLoading: false }));
 
       if (reconnectTimeout.current) {
@@ -103,6 +105,12 @@ export const WebSocketProvider = ({ children }) => {
             setState(prev => ({
               ...prev,
               repeat: message.data?.repeatState || 0,
+            }));
+            break;
+          case "PLAYLISTS_INFO":
+            setState(prev => ({
+              ...prev,
+              playlists: message.data?.playlists || [],
             }));
             break;
         }
