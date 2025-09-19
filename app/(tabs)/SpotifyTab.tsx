@@ -8,14 +8,15 @@ import {
     faPlay,
     faPlus,
     faRepeat,
+    faSearch,
     faShuffle,
-    faVolumeUp
+    faVolumeUp,
 } from '@fortawesome/free-solid-svg-icons';
 
 import NoAudio from '../../assets/buttons/noaudio';
 import Repeat1 from '../../assets/buttons/repeat1';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import CustomSlider from '@/components/CustomSlider';
@@ -23,10 +24,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 import { useWebSocket } from '@/contexts/WebsocketContext';
 import PagerView from 'react-native-pager-view';
+import SpotifyArtistsTab from './spotifyartiststab';
 import SpotifyPlaylistTab from './spotifyplaylisttab';
 
 export default function SpotifyTab() {
     const { state, sendCommandWithStateUpdate } = useWebSocket();
+    const [currentPage, setCurrentPage] = useState(0);
 
     const {
         isPlaying,
@@ -85,7 +88,7 @@ export default function SpotifyTab() {
     if (state.isLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Caricamento...</Text>
+                <Text>IN ATTESA DI SPOTIFY ...</Text>
             </View>
         );
     }
@@ -97,8 +100,13 @@ export default function SpotifyTab() {
             blurRadius={50}
             resizeMode="cover"
         >
-            <PagerView style={{ flex: 1 }} initialPage={0} orientation={"vertical"}>
-                <View key="1" style={[styles.page, { flexDirection: isPortrait ? 'column' : 'row' }]}>
+            <PagerView style={{ flex: 1 }} initialPage={1} orientation={"vertical"} onPageSelected={e => setCurrentPage(e.nativeEvent.position)}>
+
+                <View key="1" style={styles.page}>
+                    <Text>Search</Text>
+                </View>
+
+                <View key="2" style={[styles.page, { flexDirection: isPortrait ? 'column' : 'row' }]}>
                     <View style={styles.leftPanel}>
                         <Animated.Image
                             source={{ uri: trackImage }}
@@ -204,11 +212,42 @@ export default function SpotifyTab() {
                 </View>
 
 
-                <View key="2" style={styles.page}>
+                <View key="3" style={styles.page}>
                     <SpotifyPlaylistTab></SpotifyPlaylistTab>
                 </View>
 
+                <View key="4" style={styles.page}>
+                    <SpotifyArtistsTab></SpotifyArtistsTab>
+                </View>
+
             </PagerView>
+
+            {/*Sezione dei dot per indicatore pagina*/}
+            <View style={styles.dotContainer}>
+                {[0, 1, 2, 3].map((i) => (
+                    i === 0 ? (
+                        <FontAwesomeIcon
+                            key="search"
+                            icon={faSearch}
+                            size={currentPage === 0 ? 12 : 9}
+                            style={[
+                                styles.dotIcon,
+                                currentPage === 0 && styles.activeDotIcon
+                            ]}
+                        />
+                    ) : (
+                        <View
+                            key={i}
+                            style={[
+                                styles.dot,
+                                currentPage === i && styles.activeDot
+                            ]}
+                        />
+                    )
+                ))}
+            </View>
+
+
         </ImageBackground>
     );
 }
@@ -304,4 +343,41 @@ const styles = StyleSheet.create({
     buttonIcon: {
         color: 'rgba(255,255,255,0.8)'
     },
+
+
+
+    dotContainer: {
+        position: 'absolute',
+        left: 10,
+        top: '50%',
+        transform: [{ translateY: '-50%' }],
+        flexDirection: 'column',
+        alignItems: 'center',
+        backgroundColor: 'rgba(116, 116, 116, 0.4)',
+        borderRadius: 10,
+        width: 20,
+        height: 80,
+        justifyContent: 'center',
+    },
+    dot: {
+        width: 5,
+        height: 5,
+        borderRadius: 4,
+        marginVertical: 6,
+        backgroundColor: 'rgba(255,255,255,0.4)',
+    },
+    activeDot: {
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        width: 8,
+        height: 8,
+    },
+
+    dotIcon: {
+        color: 'rgba(255,255,255,0.4)',
+        marginVertical: 6,
+    },
+    activeDotIcon: {
+        color: 'rgba(255,255,255,0.8)',
+    },
+
 });

@@ -20,9 +20,17 @@ export const WebSocketProvider = ({ children }) => {
     shuffle: false,
     repeat: 0,
     playlists: [],
+    artists: [],
   });
 
   // Funzione per inviare comandi al WS
+
+  const sendReady = () => {
+    if (websocket.current?.readyState === WebSocket.OPEN) {
+      websocket.current.send(JSON.stringify({ type: "SPOTIFYCONTROLLERREADY", data: { state: true } }));
+    }
+  };
+
   const sendCommand = (command) => {
     if (websocket.current?.readyState === WebSocket.OPEN) {
       websocket.current.send(JSON.stringify({ type: "COMMAND", data: { command } }));
@@ -51,6 +59,13 @@ export const WebSocketProvider = ({ children }) => {
     sendCommand(command);
   };
 
+  const initializeUi = async () => {
+    await sendCommand("isplaying");
+    await sendCommand("getplaylists");
+    await sendCommand("trackinfo");
+    setState(prev => ({ ...prev, isLoading: false }));
+  };
+
   const connectWebSocket = () => {
     if (websocket.current) {
       websocket.current.close();
@@ -61,9 +76,7 @@ export const WebSocketProvider = ({ children }) => {
 
     websocket.current.onopen = () => {
       console.log("WebSocket connesso.");
-      sendCommand("isplaying");
-      sendCommand("getplaylists");
-      setState(prev => ({ ...prev, isLoading: false }));
+      sendReady();
 
       if (reconnectTimeout.current) {
         clearTimeout(reconnectTimeout.current);
@@ -112,6 +125,15 @@ export const WebSocketProvider = ({ children }) => {
               ...prev,
               playlists: message.data?.playlists || [],
             }));
+            break;
+          case "ARTISTS_INFO":
+            setState(prev => ({
+              ...prev,
+              artists: message.data?.artists || [],
+            }));
+            break;
+          case "STARTMESSAGGING": //Handshake completato
+            initializeUi();
             break;
         }
       } catch (err) {
