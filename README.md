@@ -119,6 +119,8 @@ spicetify apply
 
 ## 📱 Screenshots
 ![photo_2025-09-10_17-05-01](https://github.com/user-attachments/assets/29315abb-7111-480f-aed6-d8e62d778249)
+<img width="1280" height="591" alt="image" src="https://github.com/user-attachments/assets/b5f0925c-1051-4745-8485-5e434021e4e0" />
+
 ---
 
 ## 👨‍💻 Author
