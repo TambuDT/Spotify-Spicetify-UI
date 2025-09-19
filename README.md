@@ -40,7 +40,6 @@ With this app, you can turn your smartphone into a **music controller** for Spot
 
 ### 2 Start the Python Server
 -The server is located in the same Spicetify Repo
-```
 
 ### 3 Start the Spicetify script
 The script starts automatically once properly added to Spicetify.
